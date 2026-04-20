@@ -1,85 +1,126 @@
-# Ubuntu Version
+# SDN Mininet Based Simulation Project
 
-This folder is a standalone Ubuntu/Linux package of the project.
+## 📌 Problem Statement
 
-Contents included here:
-- controller code
-- topology code
-- timeout/policy module
-- scripts
-- tests
-- artifacts
-- sample controller and Mininet output logs
+This project implements a Software Defined Networking (SDN) solution using Mininet and a Ryu controller. The goal is to demonstrate controller–switch interaction, flow rule installation, and dynamic network behavior using OpenFlow.
 
-## Ubuntu Packages
+---
 
-```bash
-sudo apt update
-sudo apt install -y python3 python3-venv python3-pip build-essential \
-  openvswitch-switch mininet iperf3 tcpdump net-tools socat ethtool
-```
+## ⚙️ Technologies Used
 
-## Python Environment
+* Mininet
+* Ryu Controller
+* OpenFlow 1.3
+* Ubuntu (Virtual Machine)
 
-From this folder:
+---
 
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip setuptools wheel
-.venv/bin/python -m pip install -r requirements.txt
-```
+## 🧠 Project Objectives
 
-## Start Open vSwitch
+* Implement a learning switch using SDN controller
+* Design and install flow rules (match–action)
+* Demonstrate controller handling of packet_in events
+* Implement flow timeout (idle + hard timeout)
+* Observe network behavior dynamically
 
-```bash
-sudo service openvswitch-switch start
-sudo service openvswitch-switch status
-```
+---
 
-## Run The Project
+## 🏗️ Network Topology
 
-Terminal 1:
+* Hosts: h1, h2, h3, h4
+* Switches: s1, s2
+* Controller: Remote Ryu Controller
+
+---
+
+## ▶️ How to Run
+
+### 1. Start Controller
 
 ```bash
-./scripts/run_controller.sh
+bash scripts/run_controller.sh
 ```
 
-Terminal 2:
+### 2. Start Topology
 
 ```bash
-./scripts/run_topology.sh
+bash scripts/run_topology.sh
 ```
 
-## Demo Commands
-
-Use:
+### 3. Run Mininet Commands
 
 ```bash
-cat scripts/demo_commands.txt
+h1 ping h2
+h2 ping h3
 ```
 
-## Validation
+---
 
-```bash
-.venv/bin/python -m unittest discover -s tests -v
-.venv/bin/python -m py_compile controller/timeout_manager.py topology/timeout_topology.py flow_timeout_manager/config.py flow_timeout_manager/policy.py tests/test_policy.py scripts/ryu_compat.py
-```
+## 🔬 Test Scenarios
 
-## Evidence Collection
+### ✅ Scenario 1: Normal Forwarding
 
-While Mininet is running:
+* Hosts communicate successfully
+* Controller installs flow rules dynamically
 
-```bash
-./scripts/collect_evidence.sh
-```
+### ✅ Scenario 2: Flow Timeout
 
-The flow dumps will be saved under `artifacts/`.
+* Idle timeout removes flow after 10 seconds
+* Hard timeout removes flow after 40 seconds
+* Flow is reinstalled when new packets arrive
 
-## Optional Ubuntu Helper
+---
 
-You can also use the Ubuntu helper script:
+## 📊 Observations
 
-```bash
-chmod +x ubuntu/setup_ubuntu.sh
-./ubuntu/setup_ubuntu.sh
-```
+* Initial packets are flooded (unknown destination)
+* Flow rules are installed after learning MAC addresses
+* Flow entries expire based on timeout values
+* Controller reinstalls rules after expiration
+
+---
+
+## 📸 Proof of Execution
+
+### Topology Creation
+
+![Topology](screenshots/1_topology.png)
+
+### Ping Test
+
+![Ping](screenshots/2_ping.png)
+
+### Flow Table
+
+![Flow Table](screenshots/3_flow_table.png)
+
+### Idle Timeout
+
+![Idle Timeout](screenshots/4_idle_timeout.png)
+
+### Hard Timeout
+
+![Hard Timeout](screenshots/5_hard_timeout.png)
+
+---
+
+## 📈 Performance Analysis
+
+* Latency observed using ping
+* Flow table updates monitored using ovs-ofctl
+* Packet statistics analyzed from controller logs
+
+---
+
+## ✅ Conclusion
+
+This project successfully demonstrates SDN concepts including dynamic flow rule management, controller-driven networking, and timeout-based flow handling.
+
+---
+
+## 📚 References
+
+* Mininet Documentation
+* Ryu SDN Framework
+* OpenFlow Specification
+
